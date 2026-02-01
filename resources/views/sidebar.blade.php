@@ -94,6 +94,31 @@
                     </ul>
                 </li>
 
+                <li class="nav-item {{ Request::is('branches*') ? 'menu-open' : '' }}">
+                    <a href="{{ route('branches.index') }}" class="nav-link">
+                        <i class="nav-icon fas fa-th"></i>
+                        <p>
+                            Branches
+                            <i class="fas fa-angle-left right"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('branches.create') }}" class="nav-link {{ request()->routeIs('branches.create') ? 'active_nav_menu' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Add Branches</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('branches.index') }}" class="nav-link {{ request()->routeIs('branches.index') ? 'active_nav_menu' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>All Branches</p>
+                            </a>
+                        </li>
+
+                    </ul>
+                </li>
+
                 <li class="nav-item {{ Request::is('password-change') ? 'menu-open' : '' }}">
                     <a href="{{ route('password-change') }}" class="nav-link">
                         <i class="nav-icon fas fa-cog"></i>

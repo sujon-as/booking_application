@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BranchController;
 use App\Http\Controllers\DurationController;
 use App\Http\Controllers\ServiceController;
 use Illuminate\Support\Facades\Artisan;
@@ -35,6 +36,8 @@ Route::group(['middleware' => ['prevent-back-history', 'admin_auth']], function 
     // Service Routes
     Route::resource('services', ServiceController::class);
     Route::resource('durations', DurationController::class);
+    Route::resource('branches', BranchController::class);
+    Route::post('branch-status-update', [BranchController::class, 'branchStatusUpdate']);
 });
 
 
