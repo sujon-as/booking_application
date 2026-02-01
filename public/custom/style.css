@@ -20,7 +20,7 @@
       margin-bottom: 20px!important;
     }
 
-   
+
 
         page-link{
             padding: 10px!important;
@@ -61,7 +61,7 @@
 }
 
 .loader-image
-{   
+{
     display: block;
     margin-left: auto;
      margin-right: auto;
@@ -119,4 +119,10 @@ th{
 
 .button-product-filters{
   gap: 10px!important;
+}
+
+.active_nav_menu {
+    font-weight: bold;
+    background-color: #484E53;
+    color: #ffffff;
 }

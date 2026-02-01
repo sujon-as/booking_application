@@ -6,14 +6,14 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1 class="m-0">Add Event</h1>
+                    <h1 class="m-0">Add Service</h1>
                 </div><!-- /.col -->
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="{{URL::to('/dashboard')}}">Dashboard</a></li>
-                        <li class="breadcrumb-item"><a href="{{URL::to('/events')}}">All Event
+                        <li class="breadcrumb-item"><a href="{{URL::to('/services')}}">All Service
                                 </a></li>
-                        <li class="breadcrumb-item active">Add Event</li>
+                        <li class="breadcrumb-item active">Add Service</li>
                     </ol>
                 </div><!-- /.col -->
             </div><!-- /.row -->
@@ -24,35 +24,35 @@
     <section class="content">
         <div class="card card-primary">
             <div class="card-header">
-                <h3 class="card-title">Add Event</h3>
+                <h3 class="card-title">Add Service</h3>
             </div>
             <!-- /.card-header -->
             <!-- form start -->
-            <form action="{{route('events.store')}}" method="POST" enctype="multipart/form-data">
+            <form action="{{route('services.store')}}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-md-12">
+                        <div class="col-md-6">
                             <div class="form-group">
-                                <label for="title">Title <span class="required">*</span></label>
-                                <input type="text" name="title" class="form-control" id="title"
-                                    placeholder="Event Name" required="" value="{{old('title')}}">
-                                @error('title')
+                                <label for="title">Service Name <span class="required">*</span></label>
+                                <input type="text" name="name" class="form-control" id="name"
+                                    placeholder="Service Name" required="" value="{{old('name')}}">
+                                @error('name')
                                     <span class="alert alert-danger">{{ $message }}</span>
                                 @enderror
                             </div>
                         </div>
 
-                        <div class="col-md-12">
+                        <div class="col-md-6">
                             <div class="form-group">
-                                <label>File <span class="required">*</span></label>
-                                <div class="drop-container">
-                                    <label for="file-input" class="upload-button">Upload Files</label>
-                                    <div class="preview-images" id="preview-container"></div>
-                                    <input type="file" class="form-control" required="" name="file" id="file-input">
-                                </div>
-                                @error('file')
-                                    <span class="alert alert-danger">{{ $message }}</span>
+                                <label for="status">Status <span class="required">*</span></label>
+                                <select class="form-control select2bs4" name="status" id="status" required="">
+                                    <option value="" selected="" disabled="">Select One</option>
+                                    <option value="Active">Active</option>
+                                    <option value="Inactive">Inactive</option>
+                                </select>
+                                @error('status')
+                                <span class="alert alert-danger">{{ $message }}</span>
                                 @enderror
                             </div>
                         </div>

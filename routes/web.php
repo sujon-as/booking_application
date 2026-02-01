@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ServiceController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\IndexController;
@@ -29,6 +30,9 @@ Route::group(['middleware' => ['prevent-back-history', 'admin_auth']], function 
     Route::get('/dashboard', [DashboardController::class, 'Dashboard'])->name('dashboard');
     Route::get('password-change', [AccessController::class, 'passwordChange'])->name('password-change');
     Route::post('change-password', [AccessController::class, 'changePassword'])->name('change-password');
+
+    // Service Routes
+    Route::resource('services', ServiceController::class);
 });
 
 

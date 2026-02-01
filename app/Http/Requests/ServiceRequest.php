@@ -2,10 +2,10 @@
 
 namespace App\Http\Requests;
 
-use App\Models\Event;
+use App\Models\Service;
 use Illuminate\Foundation\Http\FormRequest;
 
-class EventRequest extends FormRequest
+class ServiceRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,13 +24,9 @@ class EventRequest extends FormRequest
      */
     public function rules()
     {
-        // Get the route name and apply null-safe operator
-        $routeName = $this->route()?->getName();
+        $data = $this->route('service');
+        $id = $data?->id ?? null;
 
-        if ($routeName === 'events.update') {
-            return Event::updateRules();
-        }
-
-        return Event::rules();
+        return Service::rules($id);
     }
 }

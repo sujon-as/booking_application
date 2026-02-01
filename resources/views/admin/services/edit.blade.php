@@ -6,14 +6,14 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1 class="m-0">Edit Level</h1>
+                    <h1 class="m-0">Edit Service</h1>
                 </div><!-- /.col -->
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="{{URL::to('/dashboard')}}">Dashboard</a></li>
-                        <li class="breadcrumb-item"><a href="{{URL::to('/levels')}}">All Level
+                        <li class="breadcrumb-item"><a href="{{URL::to('/services')}}">All Service
                                 </a></li>
-                        <li class="breadcrumb-item active">Edit Level</li>
+                        <li class="breadcrumb-item active">Edit Service</li>
                     </ol>
                 </div><!-- /.col -->
             </div><!-- /.row -->
@@ -24,38 +24,42 @@
     <section class="content">
         <div class="card card-success">
             <div class="card-header">
-                <h3 class="card-title">Edit Level</h3>
+                <h3 class="card-title">Edit Service</h3>
             </div>
             <!-- /.card-header -->
             <!-- form start -->
-            <form action="{{route('levels.update',$level->id)}}" method="POST" enctype="multipart/form-data">
+            <form action="{{route('services.update',$service->id)}}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PATCH')
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="title">Title <span class="required">*</span></label>
-                                <input type="text" name="title" class="form-control" id="title"
-                                       placeholder="Title" required="" value="{{old('title',$level->title)}}">
-                                @error('title')
-                                    <span class="alert alert-danger">{{ $message }}</span>
+                                <label for="title">Service Name <span class="required">*</span></label>
+                                <input type="text" name="name" class="form-control" id="name"
+                                       placeholder="Service Name" required="" value="{{old('name', $service->name)}}">
+                                @error('name')
+                                <span class="alert alert-danger">{{ $message }}</span>
                                 @enderror
                             </div>
                         </div>
 
-                        <div class="col-md-12">
+                        <div class="col-md-6">
                             <div class="form-group">
-                                <label for="description">Description <span class="required">*</span></label>
-                                <textarea class="form-control description" required="" name="description">{!!old('description',$level->description)!!}</textarea>
-                                @error('description')
+                                <label for="status">Status <span class="required">*</span></label>
+                                <select class="form-control select2bs4" name="status" id="status" required="">
+                                    <option value="" selected="" disabled="">Select One</option>
+                                    <option value="Active" @if($service->status === 'Active') selected @endif>Active</option>
+                                    <option value="Inactive" @if($service->status === 'Inactive') selected @endif>Inactive</option>
+                                </select>
+                                @error('status')
                                 <span class="alert alert-danger">{{ $message }}</span>
                                 @enderror
                             </div>
                         </div>
 
                         <div class="form-group w-100 px-2">
-                            <button type="submit" class="btn btn-success">Save Changes</button>
+                            <button type="submit" class="btn btn-primary">Submit</button>
                         </div>
                     </div>
                     <!-- /.card-body -->
