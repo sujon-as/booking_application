@@ -40,7 +40,6 @@
                         <i class="nav-icon fas fa-tachometer-alt"></i>
                         <p>
                             Dashboard
-
                         </p>
                     </a>
 
@@ -56,13 +55,13 @@
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="{{ route('products.create') }}" class="nav-link">
+                            <a href="#" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Add Product</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ route('products.index') }}" class="nav-link">
+                            <a href="#" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>All Product</p>
                             </a>
@@ -80,13 +79,13 @@
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="{{ route('packages.create') }}" class="nav-link">
+                            <a href="#" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Add Package</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ route('packages.index') }}" class="nav-link">
+                            <a href="#" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>All Package</p>
                             </a>
@@ -95,7 +94,7 @@
                     </ul>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ route('settings') }}" class="nav-link">
+                    <a href="#" class="nav-link">
                         <i class="nav-icon far fa-image"></i>
                         <p>
                             Settings
@@ -112,13 +111,13 @@
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="{{ route('frozen-amounts.create') }}" class="nav-link">
+                            <a href="#" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Add Frozen Amount</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ route('frozen-amounts.index') }}" class="nav-link">
+                            <a href="#" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>All Frozen Amount</p>
                             </a>
@@ -126,59 +125,12 @@
 
                     </ul>
                 </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="nav-icon fas fa-th"></i>
-                        <p>
-                            Event
-                            <i class="fas fa-angle-left right"></i>
-                        </p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="{{ route('events.create') }}" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Add Event</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('events.index') }}" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>All Event</p>
-                            </a>
-                        </li>
 
-                    </ul>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ route('levels.index') }}" class="nav-link">
-                        <i class="nav-icon fas fa-th"></i>
+                <li class="nav-item {{ Request::is('password-change') ? 'menu-open' : '' }}">
+                    <a href="{{ route('password-change') }}" class="nav-link">
+                        <i class="nav-icon fas fa-cog"></i>
                         <p>
-                            Level
-                            <i class="fas fa-angle-left right"></i>
-                        </p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="{{ route('levels.create') }}" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Add Level</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('levels.index') }}" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>All Level</p>
-                            </a>
-                        </li>
-
-                    </ul>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ route('about-us') }}" class="nav-link">
-                        <i class="nav-icon far fa-image"></i>
-                        <p>
-                            About Us
+                            Password Change
                         </p>
                     </a>
                 </li>

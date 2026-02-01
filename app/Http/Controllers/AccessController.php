@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Auth;
 use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 
 class AccessController extends Controller
@@ -15,14 +16,14 @@ class AccessController extends Controller
     	try
         {
         	$data = $request->all();
-		    	if(Auth::attempt(['username' => $data['username'], 'password' => $data['password']])){
+		    	if(Auth::attempt(['email' => $data['email'], 'password' => $data['password']])){
 
 		    		$notification = array(
 		                     'message' => 'Successfully Logged In',
 		                     'alert-type' => 'success'
 		                    );
 
-		           return redirect('/dashboard')->with($notification);
+		           return redirect()->route('dashboard')->with($notification);
 		    	} else {
 		    		$notification = array(
 		                     'message' => 'Username or Password Invalid',
@@ -36,8 +37,7 @@ class AccessController extends Controller
             Log::error('Error in Login: ', [
                 'message' => $e->getMessage(),
                 'code' => $e->getCode(),
-                'line' => $e->getLine(),
-                'trace' => $e->getTraceAsString()
+                'line' => $e->getLine()
             ]);
 
             $notification=array(
@@ -52,7 +52,7 @@ class AccessController extends Controller
     {
     	try
     	{
-            $redirectUrl = Auth::user()->role === 'user' ? '/user/login' : '/admin/login';
+            $redirectUrl = '/';
     		Auth::logout();
     		return redirect($redirectUrl);
     	} catch(Exception $e) {
@@ -60,8 +60,7 @@ class AccessController extends Controller
             Log::error('Error in Logout: ', [
                 'message' => $e->getMessage(),
                 'code' => $e->getCode(),
-                'line' => $e->getLine(),
-                'trace' => $e->getTraceAsString()
+                'line' => $e->getLine()
             ]);
 
             $notification=array(
@@ -69,6 +68,63 @@ class AccessController extends Controller
                 'alert-type' => 'error'
             );
             return Redirect()->back()->with($notification);
+        }
+    }
+    public function passwordChange()
+    {
+        return view('admin.settings.change_password');
+    }
+    public function changePassword(Request $request)
+    {
+        try
+        {
+            $user = User::findorfail(Auth::user()->id);
+
+            if (!Hash::check($request->current_password, $user->password)) {
+
+                $notification=array(
+                    'message' => 'The current password is not matched',
+                    'alert-type' => 'error'
+                );
+
+                return redirect()->back()->with($notification);
+            }
+
+            if ($request->new_password !== $request->confirm_password) {
+
+                $notification=array(
+                    'message' => 'The new & confirm password are not matched',
+                    'alert-type' => 'error'
+                );
+
+                return redirect()->back()->with($notification);
+            }
+
+            $user->password = $request->new_password;
+            $user->update();
+
+
+            $notification=array(
+                'message' => 'Successfully your has been changed',
+                'alert-type' => 'success'
+            );
+
+            return redirect()->route('dashboard')->with($notification);
+
+        } catch(Exception $e) {
+            // Log the error
+            Log::error('Error in changePassword: ', [
+                'message' => $e->getMessage(),
+                'code' => $e->getCode(),
+                'line' => $e->getLine()
+            ]);
+
+            $notification=array(
+                'message' => 'Something went wrong!!!',
+                'alert-type' => 'error'
+            );
+
+            return redirect()->back()->with($notification);
         }
     }
 }

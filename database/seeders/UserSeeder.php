@@ -11,34 +11,15 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        // Default admin user
         User::create([
-            'uid' => '1000',
-            'name' => 'Admin User',
-            'role' => 'admin',
-            'username' => 'admin',
-            'phone' => '01712345678',
-            'withdraw_acc_number' => '1234567890',
-            'password' => '123456',
-            'withdraw_password' => '123456',
-            'balance' => '1000',
-            'status' => 'Active',
-            'remember_token' => Str::random(10),
-        ]);
-
-        // Another sample user
-        User::create([
-            'uid' => '1001',
-            'name' => 'Test User',
-            'role' => 'user',
-            'username' => 'user',
-            'phone' => '01812345678',
-            'withdraw_acc_number' => '9876543210',
-            'password' => '123456',
-            'withdraw_password' => '123456',
-            'balance' => '10000',
-            'status' => 'Active',
-            'remember_token' => Str::random(10),
+            'name'     => 'Admin',
+            'email'         => 'admin@gmail.com',
+            'phone'         => '01712345678',
+            'user_type_id'  => 1, // admin
+            'role'          => 'admin',
+            'password'      => '123456', // Mutator will hash this password
+            'remember_token'         => Str::random(60),
+            'status'        => 'Active',
         ]);
     }
 }

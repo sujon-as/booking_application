@@ -16,13 +16,21 @@ use App\Http\Controllers\DashboardController;
 |
 */
 
-Route::get('/', [IndexController::class, 'loginPage']);
+Route::get('/', [IndexController::class, 'loginPage'])->name('login-page');
 
 Route::get('/admin/login', [IndexController::class, 'loginPage'])->name('login-admin');
 
-Route::post('admin-login', [AccessController::class, 'adminLogin']);
+Route::post('admin-login', [AccessController::class, 'adminLogin'])->name('admin-login');
 
-Route::get('/logout', [AccessController::class, 'Logout']);
+Route::get('/logout', [AccessController::class, 'Logout'])->name('logout');
+
+Route::group(['middleware' => ['prevent-back-history', 'admin_auth']], function () {
+    // admin dashboard
+    Route::get('/dashboard', [DashboardController::class, 'Dashboard'])->name('dashboard');
+    Route::get('password-change', [AccessController::class, 'passwordChange'])->name('password-change');
+    Route::post('change-password', [AccessController::class, 'changePassword'])->name('change-password');
+});
+
 
 Route::get('/clear-cache', function () {
     Artisan::call('cache:clear');
@@ -31,9 +39,4 @@ Route::get('/clear-cache', function () {
     Artisan::call('view:clear');
 
     return 'All caches (config, route, view, application) have been cleared!';
-});
-
-Route::group(['middleware' => ['prevent-back-history', 'admin_auth']], function () {
-    // admin dashboard
-    Route::get('/dashboard', [DashboardController::class, 'Dashboard']);
 });
