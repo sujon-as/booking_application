@@ -95,6 +95,30 @@
             }
         });
 
+        $(document).on('click', '#status-update', function(){
+
+            const id = $(this).data('id');
+            var isDataChecked = $(this).prop('checked');
+            var status_val = isDataChecked ? 'Active' : 'Inactive';
+            $.ajax({
+
+                url: "{{ url('/service-status-update') }}",
+
+                type: "POST",
+                data:{ 'id': id, 'status': status_val },
+                dataType: "json",
+                success:function(data) {
+                    if (data.status) {
+                        toastr.success(data.message);
+
+                        $('.data-table').DataTable().ajax.reload(null, false);
+                    } else {
+                        toastr.error(data.message);
+                    }
+                },
+            });
+        });
+
   	});
   </script>
 

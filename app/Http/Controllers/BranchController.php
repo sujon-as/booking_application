@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\BranchRequest;
 use App\Models\Branch;
 use Illuminate\Http\Request;
 use DataTables;
@@ -60,7 +61,7 @@ class BranchController extends Controller
                         $btn = "";
                         $btn .= '&nbsp;';
 
-                        $btn .= ' <a href="'.route('services.show',$row->id).'" class="btn btn-primary btn-sm action-button edit-product" data-id="'.$row->id.'"><i class="fa fa-edit"></i></a>';
+                        $btn .= ' <a href="'.route('branches.show',$row->id).'" class="btn btn-primary btn-sm action-button edit-product" data-id="'.$row->id.'"><i class="fa fa-edit"></i></a>';
 
                         $btn .= '&nbsp;';
 
@@ -75,6 +76,8 @@ class BranchController extends Controller
                             $searchValue = $request->search['value'];
                             $query->where(function($q) use ($searchValue) {
                                 $q->where('name', 'like', "%{$searchValue}%")
+                                    ->orWhere('email', 'like', "%{$searchValue}%")
+                                    ->orWhere('phone', 'like', "%{$searchValue}%")
                                     ->orWhere('status', 'like', "%{$searchValue}%");
                             });
                         }
@@ -100,25 +103,31 @@ class BranchController extends Controller
     }
     public function create()
     {
-        return view('admin.services.create');
+        return view('admin.branches.create');
     }
-    public function store(ServiceRequest $request)
+    public function store(BranchRequest $request)
     {
         DB::beginTransaction();
         try
         {
-            $task = new Branch();
-            $task->name = $request->name;
-            $task->status = $request->status;
-            $task->save();
+            $branch = new Branch();
+            $branch->name = $request->name ?? null;
+            $branch->address = $request->address ?? null;
+            $branch->email = $request->email ?? null;
+            $branch->phone = $request->phone ?? null;
+            $branch->latitude = $request->latitude ?? null;
+            $branch->longitude = $request->longitude ?? null;
+            $branch->status = $request->status ?? null;
+            $branch->save();
 
             $notification=array(
                 'message' => 'Successfully a data has been added',
                 'alert-type' => 'success',
             );
+
             DB::commit();
 
-            return redirect()->route('services.index')->with($notification);
+            return redirect()->route('branches.index')->with($notification);
 
         } catch(Exception $e) {
             DB::rollback();
@@ -138,26 +147,31 @@ class BranchController extends Controller
     }
     public function show(Branch $branch)
     {
-        return view('admin.services.edit', compact('service'));
+        return view('admin.branches.edit', compact('branch'));
     }
     public function edit(Branch $branch)
     {
         //
     }
-    public function update(ServiceRequest $request, Branch $branch)
+    public function update(BranchRequest $request, Branch $branch)
     {
         try
         {
-            $service->name = $request->name;
-            $service->status = $request->status;
-            $service->save();
+            $branch->name = $request->name;
+            $branch->address = $request->address;
+            $branch->email = $request->email;
+            $branch->phone = $request->phone;
+            $branch->latitude = $request->latitude;
+            $branch->longitude = $request->longitude;
+            $branch->status = $request->status;
+            $branch->save();
 
             $notification=array(
                 'message' => 'Successfully the data has been updated',
                 'alert-type' => 'success',
             );
 
-            return redirect()->route('services.index')->with($notification);
+            return redirect()->route('branches.index')->with($notification);
 
         } catch(Exception $e) {
             // Log the error
@@ -178,7 +192,7 @@ class BranchController extends Controller
     {
         try
         {
-            $service->delete();
+            $branch->delete();
             return response()->json([
                 'status'=>true,
                 'message'=>'Successfully the data has been deleted'
@@ -198,49 +212,33 @@ class BranchController extends Controller
             ]);
         }
     }
-    public function branchStatusUpdate()
+    public function branchStatusUpdate(BranchRequest $request)
     {
         DB::beginTransaction();
         try
         {
-            $user = Branch::findorfail($request->user_id);
-            $user->status = $request->status;
-            $user->update();
-
-            $existingAssignedTask = AssignedTrialTask::where('user_id', $user->id)->first();
-            if (!$existingAssignedTask) {
-                $trialTaskInfo = TrialTask::first();
-
-                $assignLevel = new AssignedTrialTask();
-                $assignLevel->user_id = $user->id;
-                $assignLevel->trial_task_id = $request->trial_task_id;
-                $assignLevel->num_of_tasks = ($trialTaskInfo && $trialTaskInfo->num_of_task) ? $trialTaskInfo->num_of_task : 0;
-                $assignLevel->status = 'pending';
-                $assignLevel->save();
-
-                $user->balance = $trialTaskInfo->trial_balance;
-                $user->update();
-            }
+            $data = Branch::findorfail($request->id);
+            $data->status = $request->status;
+            $data->update();
 
             DB::commit();
 
             return response()->json([
-                'status'=>true,
-                'message'=>"User status updated successfully."
+                'status' => true,
+                'message' => "Branch status updated successfully."
             ]);
         } catch(Exception $e) {
             DB::rollBack();
             // Log the error
-            Log::error('Error in updating user: ', [
+            Log::error('Error in updating status: ', [
                 'message' => $e->getMessage(),
                 'code' => $e->getCode(),
-                'line' => $e->getLine(),
-                'trace' => $e->getTraceAsString()
+                'line' => $e->getLine()
             ]);
 
             return response()->json([
-                'status'=>false,
-                'message'=>"Something went wrong!!!"
+                'status' => false,
+                'message' => "Something went wrong!!!"
             ]);
         }
     }

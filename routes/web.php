@@ -35,9 +35,13 @@ Route::group(['middleware' => ['prevent-back-history', 'admin_auth']], function 
 
     // Service Routes
     Route::resource('services', ServiceController::class);
+    Route::post('service-status-update', [ServiceController::class, 'serviceStatusUpdate'])->name('service-status-update');
+
     Route::resource('durations', DurationController::class);
+    Route::post('duration-status-update', [DurationController::class, 'durationStatusUpdate'])->name('duration-status-update');
+
     Route::resource('branches', BranchController::class);
-    Route::post('branch-status-update', [BranchController::class, 'branchStatusUpdate']);
+    Route::post('branch-status-update', [BranchController::class, 'branchStatusUpdate'])->name('branch-status-update');
 });
 
 

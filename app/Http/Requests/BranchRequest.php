@@ -2,10 +2,11 @@
 
 namespace App\Http\Requests;
 
-use App\Models\Duration;
+use App\Models\Branch;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Log;
 
-class DurationRequest extends FormRequest
+class BranchRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -27,13 +28,13 @@ class DurationRequest extends FormRequest
         // Get the route name and apply null-safe operator
         $routeName = $this->route()?->getName();
 
-        $data = $this->route('duration');
+        $data = $this->route('branch');
         $id = $data?->id ?? null;
 
-        if ($routeName === 'duration-status-update') {
-            return Duration::durationStausUpdateRules();
+        if ($routeName === 'branch-status-update') {
+            return Branch::branchStausUpdateRules();
         }
 
-        return Duration::rules($id);
+        return Branch::rules($id);
     }
 }

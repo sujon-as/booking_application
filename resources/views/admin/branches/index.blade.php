@@ -101,22 +101,26 @@
             }
         });
 
-        $(document).on('click', '#status-user-update', function(){
+        $(document).on('click', '#status-update', function(){
 
-            user_id = $(this).data('id');
-            var isUserChecked = $(this).prop('checked');
-            var status_val = isUserChecked ? 'Active' : 'Inactive';
+            const id = $(this).data('id');
+            var isDataChecked = $(this).prop('checked');
+            var status_val = isDataChecked ? 'Active' : 'Inactive';
             $.ajax({
 
                 url: "{{ url('/branch-status-update') }}",
 
                 type: "POST",
-                data:{ 'user_id': user_id, 'status': status_val },
+                data:{ 'id': id, 'status': status_val },
                 dataType: "json",
-                success: function(data) {
-                    toastr.success(data.message);
+                success:function(data) {
+                    if (data.status) {
+                        toastr.success(data.message);
 
-                    $('.data-table').DataTable().ajax.reload(null, false);
+                        $('.data-table').DataTable().ajax.reload(null, false);
+                    } else {
+                        toastr.error(data.message);
+                    }
                 },
             });
         });

@@ -24,8 +24,15 @@ class ServiceRequest extends FormRequest
      */
     public function rules()
     {
+        // Get the route name and apply null-safe operator
+        $routeName = $this->route()?->getName();
+
         $data = $this->route('service');
         $id = $data?->id ?? null;
+
+        if ($routeName === 'service-status-update') {
+            return Service::serviceStausUpdateRules();
+        }
 
         return Service::rules($id);
     }

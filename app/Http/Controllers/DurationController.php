@@ -37,7 +37,7 @@ class DurationController extends Controller
                     })
 
                     ->addColumn('status', function($row){
-                        return $row->status ?? '';
+                        return '<label class="switch"><input class="' . ($row->status === 'Active' ? 'active-data' : 'decline-data') . '" id="status-update"  type="checkbox" ' . ($row->status === 'Active' ? 'checked' : '') . ' data-id="'.$row->id.'"><span class="slider round"></span></label>';
                     })
 
                     ->addColumn('action', function($row){
@@ -182,6 +182,36 @@ class DurationController extends Controller
             return response()->json([
                 'status' => false,
                 'message' => 'Something went wrong!!!'
+            ]);
+        }
+    }
+    public function durationStatusUpdate(DurationRequest $request)
+    {
+        DB::beginTransaction();
+        try
+        {
+            $data = Duration::findorfail($request->id);
+            $data->status = $request->status;
+            $data->update();
+
+            DB::commit();
+
+            return response()->json([
+                'status' => true,
+                'message' => "Duration status updated successfully."
+            ]);
+        } catch(Exception $e) {
+            DB::rollBack();
+            // Log the error
+            Log::error('Error in updating status: ', [
+                'message' => $e->getMessage(),
+                'code' => $e->getCode(),
+                'line' => $e->getLine()
+            ]);
+
+            return response()->json([
+                'status' => false,
+                'message' => "Something went wrong!!!"
             ]);
         }
     }

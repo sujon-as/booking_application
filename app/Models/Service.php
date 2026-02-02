@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Service extends Model
 {
     use HasFactory;
+    protected $table = 'services';
     protected $fillable = [
         'name',
         'status',
@@ -16,6 +17,15 @@ class Service extends Model
     {
         $rules = [
             'name' => 'required|string|max:255|unique:services,name,' . $id,
+            'status' => 'required|in:Active,Inactive',
+        ];
+
+        return $rules;
+    }
+    public static function serviceStausUpdateRules()
+    {
+        $rules = [
+            'id' => 'required|string|exists:services,id',
             'status' => 'required|in:Active,Inactive',
         ];
 
