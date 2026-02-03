@@ -144,6 +144,31 @@
                     </ul>
                 </li>
 
+                <li class="nav-item {{ Request::is('specialities*') ? 'menu-open' : '' }}">
+                    <a href="{{ route('specialities.index') }}" class="nav-link">
+                        <i class="nav-icon fas fa-th"></i>
+                        <p>
+                            Specialities
+                            <i class="fas fa-angle-left right"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('specialities.create') }}" class="nav-link {{ request()->routeIs('specialities.create') ? 'active_nav_menu' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Add Speciality</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('specialities.index') }}" class="nav-link {{ request()->routeIs('specialities.index') ? 'active_nav_menu' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>All Speciality</p>
+                            </a>
+                        </li>
+
+                    </ul>
+                </li>
+
                 <li class="nav-item {{ Request::is('password-change') ? 'menu-open' : '' }}">
                     <a href="{{ route('password-change') }}" class="nav-link">
                         <i class="nav-icon fas fa-cog"></i>

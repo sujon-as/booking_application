@@ -4,6 +4,7 @@ use App\Http\Controllers\BranchController;
 use App\Http\Controllers\DurationController;
 use App\Http\Controllers\ExperienceController;
 use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\SpecialityController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\IndexController;
@@ -46,6 +47,9 @@ Route::group(['middleware' => ['prevent-back-history', 'admin_auth']], function 
 
     Route::resource('experiences', ExperienceController::class);
     Route::post('experience-status-update', [ExperienceController::class, 'experienceStatusUpdate'])->name('experience-status-update');
+
+    Route::resource('specialities', SpecialityController::class);
+    Route::post('speciality-status-update', [SpecialityController::class, 'specialityStatusUpdate'])->name('speciality-status-update');
 });
 
 
