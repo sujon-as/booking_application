@@ -6,6 +6,7 @@ use App\Http\Controllers\ExperienceController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\SpecialityController;
 use App\Http\Controllers\WorkingDayController;
+use App\Http\Controllers\WorkingTimeRangeController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\IndexController;
@@ -54,6 +55,12 @@ Route::group(['middleware' => ['prevent-back-history', 'admin_auth']], function 
 
     Route::resource('workingdays', WorkingDayController::class);
     Route::post('workingdays-status-update', [WorkingDayController::class, 'workingdaysStatusUpdate'])->name('workingdays-status-update');
+
+    Route::resource('workingtimeranges', WorkingTimeRangeController::class);
+    Route::post('workingtimeranges-status-update', [
+        WorkingTimeRangeController::class, 'workingtimerangesStatusUpdate'
+    ])
+        ->name('workingtimeranges-status-update');
 });
 
 
