@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\DurationController;
+use App\Http\Controllers\ExperienceController;
 use App\Http\Controllers\ServiceController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
@@ -42,6 +43,9 @@ Route::group(['middleware' => ['prevent-back-history', 'admin_auth']], function 
 
     Route::resource('branches', BranchController::class);
     Route::post('branch-status-update', [BranchController::class, 'branchStatusUpdate'])->name('branch-status-update');
+
+    Route::resource('experiences', ExperienceController::class);
+    Route::post('experience-status-update', [ExperienceController::class, 'experienceStatusUpdate'])->name('experience-status-update');
 });
 
 

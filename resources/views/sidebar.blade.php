@@ -119,6 +119,31 @@
                     </ul>
                 </li>
 
+                <li class="nav-item {{ Request::is('experiences*') ? 'menu-open' : '' }}">
+                    <a href="{{ route('experiences.index') }}" class="nav-link">
+                        <i class="nav-icon fas fa-th"></i>
+                        <p>
+                            Experiences
+                            <i class="fas fa-angle-left right"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('experiences.create') }}" class="nav-link {{ request()->routeIs('experiences.create') ? 'active_nav_menu' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Add Experience</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('experiences.index') }}" class="nav-link {{ request()->routeIs('experiences.index') ? 'active_nav_menu' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>All Experience</p>
+                            </a>
+                        </li>
+
+                    </ul>
+                </li>
+
                 <li class="nav-item {{ Request::is('password-change') ? 'menu-open' : '' }}">
                     <a href="{{ route('password-change') }}" class="nav-link">
                         <i class="nav-icon fas fa-cog"></i>
