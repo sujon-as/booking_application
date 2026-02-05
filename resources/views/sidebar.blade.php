@@ -219,6 +219,31 @@
                     </ul>
                 </li>
 
+                <li class="nav-item {{ Request::is('staffs*') ? 'menu-open' : '' }}">
+                    <a href="{{ route('staffs.index') }}" class="nav-link">
+                        <i class="nav-icon fas fa-th"></i>
+                        <p>
+                            Staffs
+                            <i class="fas fa-angle-left right"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('staffs.create') }}" class="nav-link {{ request()->routeIs('staffs.create') ? 'active_nav_menu' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Add Staff</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('staffs.index') }}" class="nav-link {{ request()->routeIs('staffs.index') ? 'active_nav_menu' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>All Staff</p>
+                            </a>
+                        </li>
+
+                    </ul>
+                </li>
+
                 <li class="nav-item {{ Request::is('password-change') ? 'menu-open' : '' }}">
                     <a href="{{ route('password-change') }}" class="nav-link">
                         <i class="nav-icon fas fa-cog"></i>
