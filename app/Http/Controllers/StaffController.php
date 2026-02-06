@@ -3,8 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StaffRequest;
+use App\Models\Branch;
+use App\Models\Duration;
+use App\Models\Experience;
+use App\Models\Service;
+use App\Models\Speciality;
 use App\Models\Staff;
 use App\Models\User;
+use App\Models\WorkingDay;
+use App\Models\WorkingTimeRange;
 use Illuminate\Http\Request;
 use DataTables;
 use DB;
@@ -61,7 +68,7 @@ class StaffController extends Controller
 
                         $btn .= '&nbsp;';
 
-                        $btn .= ' <a href="#" class="btn btn-info btn-sm add-service action-button" data-id="'.$row->id.'">Add Service</a>';
+                        $btn .= ' <a href="'.route('staffs.add.services',$row->id).'" class="btn btn-info btn-sm add-service action-button" data-id="'.$row->id.'">Add Service</a>';
 
                         return $btn;
                     })
@@ -71,8 +78,8 @@ class StaffController extends Controller
                             $searchValue = $request->search['value'];
                             $query->where(function($q) use ($searchValue) {
                                 $q->where('name', 'like', "%{$searchValue}%")
-                                    ->orWhere('slug', 'like', "%{$searchValue}%")
-                                    ->orWhere('status', 'like', "%{$searchValue}%");
+                                    ->orWhere('email', 'like', "%{$searchValue}%")
+                                    ->orWhere('phone', 'like', "%{$searchValue}%");
                             });
                         }
                     })
@@ -278,4 +285,67 @@ class StaffController extends Controller
             ]);
         }
     }
+    public function addServices($id)
+    {
+        $staff = User::findorfail($id);
+        if (!$staff) {
+            $notification=array(
+                'message' => 'Staff not found.',
+                'alert-type' => 'error',
+            );
+
+            return redirect()->route('staffs.index')->with($notification);
+        }
+
+        $branches = Branch::where('status','Active')->get();
+        $specialities = Speciality::where('status','Active')->get();
+        $experiences = Experience::where('status','Active')->get();
+
+        $workingDays = WorkingDay::where('status','Active')
+            ->orderBy('sort_order')
+            ->get();
+        $workingTimeRanges = WorkingTimeRange::where('status','Active')->get();
+
+        $services = Service::where('status','Active')->get();
+        $durations = Duration::where('status','Active')->get();
+
+        return view('admin.staffs.add_services', compact(
+            'staff',
+            'services',
+            'branches',
+            'durations',
+            'specialities',
+            'experiences',
+            'workingDays',
+            'workingTimeRanges',
+        ));
+    }
+
+    public function storeServices(Request $request, User $staff)
+    {
+        $request->validate([
+            'service_id.*' => 'required|exists:services,id',
+            'duration.*'   => 'required|integer',
+            'price.*'      => 'required|numeric',
+        ]);
+
+        // remove old
+        StaffService::where('staff_id',$staff->id)->delete();
+
+        // insert new
+        foreach($request->service_id as $i => $serviceId){
+            StaffService::create([
+                'staff_id' => $staff->id,
+                'service_id' => $serviceId,
+                'duration_minutes' => $request->duration[$i],
+                'price' => $request->price[$i],
+            ]);
+        }
+
+        return redirect()->route('staffs.index')->with([
+            'message' => 'Services added successfully',
+            'alert-type' => 'success'
+        ]);
+    }
+
 }

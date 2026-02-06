@@ -1,5 +1,7 @@
 <?php
 
+use Carbon\Carbon;
+
 if (!function_exists('storeFile')) {
     function storeFile($file, $filePath, $prefix)
     {
@@ -50,5 +52,11 @@ if (!function_exists('deleteOldFile')) {
                 return false;
             }
         }
+    }
+}
+if (!function_exists('timeFormat')) {
+    function timeFormat($time)
+    {
+        return Carbon::parse($time)->format('h:i a');
     }
 }
