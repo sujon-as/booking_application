@@ -9,6 +9,8 @@ use App\Models\Experience;
 use App\Models\Service;
 use App\Models\Speciality;
 use App\Models\Staff;
+use App\Models\StaffService;
+use App\Models\StaffWorkingDay;
 use App\Models\User;
 use App\Models\WorkingDay;
 use App\Models\WorkingTimeRange;
@@ -31,8 +33,9 @@ class StaffController extends Controller
         {
             if($request->ajax()){
 
-                $data = User::where('user_type_id', 3)
-                    ->orWhere('role', 'service_provider')
+                $data = User::with('staff')
+                    ->where('user_type_id', 3)
+                    ->where('role', 'service_provider')
                     ->select('*')->latest();
 
                 return Datatables::of($data)
@@ -68,7 +71,19 @@ class StaffController extends Controller
 
                         $btn .= '&nbsp;';
 
-                        $btn .= ' <a href="'.route('staffs.add.services',$row->id).'" class="btn btn-info btn-sm add-service action-button" data-id="'.$row->id.'">Add Service</a>';
+                        if($row->staff){
+                            // already staff exists → Edit Services
+                            $btn .= ' <a href="'.route('staffs.edit.services',$row->id).'"
+                    class="btn btn-warning btn-sm">
+                    Edit Services
+                </a>';
+                        }else{
+                            // no staff yet → Add Services
+                            $btn .= ' <a href="'.route('staffs.add.services',$row->id).'"
+                    class="btn btn-info btn-sm">
+                    Add Services
+                </a>';
+                        }
 
                         return $btn;
                     })
@@ -291,7 +306,7 @@ class StaffController extends Controller
         if (!$staff) {
             $notification=array(
                 'message' => 'Staff not found.',
-                'alert-type' => 'error',
+                'alert-type' => 'info',
             );
 
             return redirect()->route('staffs.index')->with($notification);
@@ -321,31 +336,175 @@ class StaffController extends Controller
         ));
     }
 
-    public function storeServices(Request $request, User $staff)
+    public function storeServices(StaffRequest $request, $id)
     {
-        $request->validate([
-            'service_id.*' => 'required|exists:services,id',
-            'duration.*'   => 'required|integer',
-            'price.*'      => 'required|numeric',
-        ]);
+        try {
+            $user = User::findorfail($id);
+            if (!$user) {
+                $notification=array(
+                    'message' => 'Staff not found.',
+                    'alert-type' => 'error',
+                );
+                return redirect()->route('staffs.index')->with($notification);
+            }
 
-        // remove old
-        StaffService::where('staff_id',$staff->id)->delete();
+            $staffExist = Staff::where('user_id', $user->id)->first();
+            if ($staffExist) {
+                $notification=array(
+                    'message' => 'Service already added for this user',
+                    'alert-type' => 'error',
+                );
+                return redirect()->route('staffs.index')->with($notification);
+            }
 
-        // insert new
-        foreach($request->service_id as $i => $serviceId){
-            StaffService::create([
-                'staff_id' => $staff->id,
-                'service_id' => $serviceId,
-                'duration_minutes' => $request->duration[$i],
-                'price' => $request->price[$i],
+            DB::beginTransaction();
+
+            $staff = Staff::create([
+                'user_id' => $user->id,
+                'branch_id' => $request->branch_id,
+                'specialty_id' => $request->specialty_id,
+                'experience_id' => $request->experience_id,
+                'working_time_range_id' => $request->working_time_range_id,
+                'slot_duration_minutes' => 15,
+                'created_by' => Auth::id(),
             ]);
+
+            $staff->workingDays()->sync($request->working_day_ids);
+
+            foreach($request->service_id as $i => $serviceId){
+                StaffService::create([
+                    'user_id' => $user->id,
+                    'staff_id' => $staff->id,
+                    'service_id' => $serviceId,
+                    'duration_id' => $request->duration_id[$i],
+                    'price' => $request->price[$i],
+                ]);
+            }
+
+            DB::commit();
+
+            $notification = array(
+                'message' => 'Services added successfully',
+                'alert-type' => 'success'
+            );
+
+            return redirect()->route('staffs.index')->with($notification);
+
+        } catch(Exception $e) {
+            DB::rollBack();
+            // Log the error
+            Log::error('Error in store services: ', [
+                'message' => $e->getMessage(),
+                'code' => $e->getCode(),
+                'line' => $e->getLine()
+            ]);
+
+            $notification=array(
+                'message' => 'Something went wrong!!!',
+                'alert-type' => 'error'
+            );
+            return redirect()->back()->with($notification);
+        }
+    }
+
+    public function editServices($id)
+    {
+        $user = User::with([
+            'staff.services',
+            'staff.workingDays'
+        ])->findOrFail($id);
+
+        if(!$user?->staff){
+            return redirect()
+                ->route('staffs.add.services',$id);
         }
 
-        return redirect()->route('staffs.index')->with([
-            'message' => 'Services added successfully',
-            'alert-type' => 'success'
-        ]);
+        $staff = $user?->staff;
+
+        $services = Service::where('status','Active')->get();
+        $durations = Duration::where('status','Active')->get();
+        $workingDays = WorkingDay::where('status','Active')->get();
+        $workingTimeRanges = WorkingTimeRange::where('status','Active')->get();
+        $branches = Branch::where('status','Active')->get();
+        $specialities = Speciality::where('status','Active')->get();
+        $experiences = Experience::where('status','Active')->get();
+
+        return view('admin.staffs.edit_services', compact(
+            'user','staff','services','durations',
+            'workingDays','workingTimeRanges',
+            'branches','specialities','experiences'
+        ));
+    }
+
+    public function updateServices(StaffRequest $request, Staff $staff)
+    {
+        try {
+            DB::beginTransaction();
+
+            if(!$staff){
+                $notification=array(
+                    'message' => 'Staff record missing.',
+                    'alert-type' => 'error',
+                );
+                return redirect()->back()->with($notification);
+            }
+
+            // update staff main info
+            $staff->update([
+                'branch_id' => $request->branch_id,
+                'specialty_id' => $request->specialty_id,
+                'experience_id' => $request->experience_id,
+                'working_time_range_id' => $request->working_time_range_id,
+                'updated_by' => Auth::id(),
+            ]);
+
+            // Delete working days
+            StaffWorkingDay::where('staff_id',$staff->id)->delete();
+
+            // update working days
+            $staff->workingDays()->sync($request->working_day_ids);
+
+            // remove old services
+            StaffService::where('staff_id',$staff->id)->delete();
+
+            // insert new services
+            foreach($request->service_id as $i => $serviceId){
+                StaffService::create([
+                    'user_id' => $staff->user_id,
+                    'staff_id' => $staff->id,
+                    'service_id' => $serviceId,
+                    'duration_id' => $request->duration_id[$i],
+                    'price' => $request->price[$i],
+                ]);
+            }
+
+            DB::commit();
+
+            $notification=array(
+                'message' => 'Service updated successfully.',
+                'alert-type' => 'success'
+            );
+
+            return redirect()
+                ->route('staffs.index')
+                ->with($notification);
+
+        } catch(Exception $e) {
+
+            DB::rollBack();
+            // Log the error
+            Log::error('Error in update services: ', [
+                'message' => $e->getMessage(),
+                'code' => $e->getCode(),
+                'line' => $e->getLine()
+            ]);
+
+            $notification=array(
+                'message' => 'Something went wrong!!!',
+                'alert-type' => 'error'
+            );
+            return redirect()->back()->with($notification);
+        }
     }
 
 }

@@ -8,7 +8,22 @@ use Illuminate\Database\Eloquent\Model;
 class Staff extends Model
 {
     use HasFactory;
-    protected $table = 'staff';
+
+    protected $table = 'staffs';
+
+    protected $fillable = [
+        'user_id',
+        'branch_id',
+        'specialty_id',
+        'experience_id',
+        'working_day_id',
+        'working_time_range_id',
+        'slot_duration_minutes',
+        'balance',
+        'current_status',
+        'created_by',
+        'updated_by',
+    ];
 
     public static function rules($id = null)
     {
@@ -33,6 +48,29 @@ class Staff extends Model
 
         return $rules;
     }
+    public static function storeServiceRules()
+    {
+        $rules = [
+            'branch_id' => 'required|exists:branches,id',
+            'specialty_id' => 'required|exists:specialities,id',
+            'experience_id' => 'required|exists:experiences,id',
+            'working_time_range_id' => 'required|exists:working_time_ranges,id',
+
+            'working_day_ids' => 'required|array|min:1',
+            'working_day_ids.*' => 'exists:working_days,id',
+
+            'service_id' => 'required|array|min:1',
+            'service_id.*' => 'required|exists:services,id',
+
+            'duration_id' => 'required|array|min:1',
+            'duration_id.*' => 'required|exists:durations,id',
+
+            'price' => 'required|array|min:1',
+            'price.*' => 'required|numeric|min:0',
+        ];
+
+        return $rules;
+    }
     public static function staffStausUpdateRules()
     {
         $rules = [
@@ -41,5 +79,19 @@ class Staff extends Model
         ];
 
         return $rules;
+    }
+
+    public function workingDays()
+    {
+        return $this->belongsToMany(
+            WorkingDay::class,
+            'staff_working_days'
+        );
+    }
+    public function services()
+    {
+        return $this->hasMany(
+            StaffService::class
+        );
     }
 }

@@ -77,6 +77,11 @@ Route::group(['middleware' => ['prevent-back-history', 'admin_auth']], function 
         [StaffController::class, 'storeServices']
     )->name('staffs.store.services');
 
+    Route::get('staffs/{id}/edit-services', [StaffController::class,'editServices'])
+        ->name('staffs.edit.services');
+
+    Route::post('staffs/{staff}/update-services', [StaffController::class,'updateServices'])
+        ->name('staffs.update.services');
 });
 
 

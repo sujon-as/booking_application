@@ -39,6 +39,14 @@ class StaffRequest extends FormRequest
             return Staff::updateRules($id);
         }
 
+        if ($routeName === 'staffs.store.services') {
+            return Staff::storeServiceRules();
+        }
+
+        if ($routeName === 'staffs.update.services') {
+            return Staff::storeServiceRules();
+        }
+
         return Staff::rules($id);
     }
 }

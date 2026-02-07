@@ -5,10 +5,10 @@
         <section class="content">
             <div class="card card-info">
                 <div class="card-header">
-                    <h3>Add Services for {{ $staff->name }}</h3>
+                    <h3>Edit Services for {{ $staff->name }}</h3>
                 </div>
 
-                <form action="{{ route('staffs.store.services', $staff->id) }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ route('staffs.update.services', $staff->id) }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="card-body" id="service-wrapper">
                         <div class="row">
@@ -18,7 +18,7 @@
                                     <select class="form-control select2bs4" name="branch_id" id="branch_id" required="">
                                         <option value="" selected="" disabled="">Select One</option>
                                         @foreach($branches as $branch)
-                                            <option value="{{ $branch->id }}">{{ $branch->name }}</option>
+                                            <option value="{{ $branch->id }}" @if($staff->branch_id == $branch->id) selected @endif>{{ $branch->name }}</option>
                                         @endforeach
                                     </select>
                                     @error('branch_id')
@@ -33,7 +33,12 @@
                                     <select class="form-control select2bs4" name="specialty_id" id="specialty_id" required="">
                                         <option value="" selected="" disabled="">Select One</option>
                                         @foreach($specialities as $speciality)
-                                            <option value="{{ $speciality->id }}">{{ $speciality->name }}</option>
+                                            <option
+                                                value="{{ $speciality->id }}"
+                                                @if($staff->specialty_id == $speciality->id) selected @endif
+                                            >
+                                                {{ $speciality->name }}
+                                            </option>
                                         @endforeach
                                     </select>
                                     @error('specialty_id')
@@ -48,7 +53,12 @@
                                     <select class="form-control select2bs4" name="experience_id" id="experience_id" required="">
                                         <option value="" selected="" disabled="">Select One</option>
                                         @foreach($experiences as $experience)
-                                            <option value="{{ $experience->id }}">{{ $experience->year_of_exp . ' Years' }}</option>
+                                            <option
+                                                value="{{ $experience->id }}"
+                                                @if($staff->experience_id == $experience->id) selected @endif
+                                            >
+                                                {{ $experience->year_of_exp . ' Years' }}
+                                            </option>
                                         @endforeach
                                     </select>
                                     @error('experience_id')
@@ -68,7 +78,14 @@
                                             multiple
                                             required>
                                         @foreach($workingDays as $workingDay)
-                                            <option value="{{ $workingDay->id }}">{{ $workingDay->name }}</option>
+                                            <option
+                                                value="{{ $workingDay->id }}"
+                                                @if($staff->workingDays->pluck('id')->contains($workingDay->id))
+                                                    selected
+                                                @endif
+                                            >
+                                                {{ $workingDay->name }}
+                                            </option>
                                         @endforeach
                                     </select>
                                     @error('working_day_id')
@@ -83,7 +100,10 @@
                                     <select class="form-control select2bs4" name="working_time_range_id" id="working_time_range_id" required="">
                                         <option value="" selected="" disabled="">Select One</option>
                                         @foreach($workingTimeRanges as $workingTimeRange)
-                                            <option value="{{ $workingTimeRange->id }}">
+                                            <option
+                                                value="{{ $workingTimeRange->id }}"
+                                                @if($staff->working_time_range_id == $workingTimeRange->id) selected @endif
+                                            >
                                                 {{ timeFormat($workingTimeRange->from_time) . ' to ' . timeFormat($workingTimeRange->to_time) }}
                                             </option>
                                         @endforeach
@@ -96,36 +116,58 @@
                         </div>
 
                         <!-- প্রথম row (এটি সবসময় থাকবে + button সহ) -->
-                        <h3>Services</h3>
-                        <div class="row service-row mb-3">
-                            <div class="col-md-4">
-                                <select name="service_id[]" class="form-control select2bs4" required>
-                                    <option value="">Select service</option>
-                                    @foreach($services as $service)
-                                        <option value="{{ $service->id }}">{{ $service->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <div class="col-md-3">
-                                <select name="duration_id[]" class="form-control select2bs4" required>
-                                    <option value="">Select duration</option>
-                                    @foreach($durations as $duration)
-                                        <option value="{{ $duration->id }}">{{ $duration->time_duration . ' ' . $duration->time_unit }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <div class="col-md-3">
-                                <input type="number" step="1" name="price[]" class="form-control"
-                                       placeholder="Price" required>
-                            </div>
-
-                            <div class="col-md-2">
-                                <button type="button" class="btn btn-success add-row">
-                                    <i class="fas fa-plus"></i> Add
+                        <div id="service-wrapper">
+                            <div class="row mb-3">
+                                <h3>Services</h3>
+                                <button type="button" class="btn btn-success add-row ml-2">
+                                    <i class="fas fa-plus"></i> Add Service
                                 </button>
                             </div>
+
+                            @foreach($staff->services as $index => $ss)
+                                <div class="row service-row mb-3">
+
+                                    <div class="col-md-4">
+                                        <select name="service_id[]" class="form-control select2bs4" required>
+                                            <option value="">Select service</option>
+                                            @foreach($services as $service)
+                                                <option value="{{ $service->id }}"
+                                                        @if($service->id == $ss->service_id) selected @endif>
+                                                    {{ $service->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <select name="duration_id[]" class="form-control select2bs4" required>
+                                            <option value="">Select duration</option>
+                                            @foreach($durations as $duration)
+                                                <option value="{{ $duration->id }}"
+                                                        @if($duration->id == $ss->duration_id) selected @endif>
+                                                    {{ $duration->time_duration }} {{ $duration->time_unit }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <input type="number" step="1"
+                                               name="price[]"
+                                               class="form-control"
+                                               value="{{ $ss->price }}"
+                                               required>
+                                    </div>
+
+                                    <div class="col-md-2">
+                                        <button type="button" class="btn btn-danger remove-row">
+                                            <i class="fas fa-minus"></i> Remove
+                                        </button>
+                                    </div>
+
+                                </div>
+                            @endforeach
+
                         </div>
 
                     </div>
@@ -208,7 +250,7 @@
                     initSelect2();
 
                     // Animation
-                    $newRow.hide().fadeIn(300);
+                    $newRow.hide().fadeIn(200);
                 }
 
                 // Remove row
@@ -227,7 +269,7 @@
                         $row.find('.select2bs4').select2('destroy');
 
                         // Remove with animation
-                        $row.fadeOut(300, function() {
+                        $row.fadeOut(200, function() {
                             $(this).remove();
                         });
                     }
