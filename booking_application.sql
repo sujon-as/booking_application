@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 05, 2026 at 01:19 PM
+-- Generation Time: Feb 07, 2026 at 10:41 AM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -45,7 +45,7 @@ CREATE TABLE `branches` (
 --
 
 INSERT INTO `branches` (`id`, `name`, `address`, `email`, `phone`, `latitude`, `longitude`, `status`, `created_at`, `updated_at`) VALUES
-(2, 'Colette Dejesus', 'Quae neque non susci', 'cecilolat@mailinator.com', '+1 (316) 501-5261', '23.44', '45.44', 'Active', '2026-02-02 11:11:02', '2026-02-02 11:11:02');
+(2, 'Farmgate', 'Quae neque non susci', 'cecilolat@mailinator.com', '+1 (316) 501-5261', '23.44', '45.44', 'Active', '2026-02-02 11:11:02', '2026-02-07 06:55:33');
 
 -- --------------------------------------------------------
 
@@ -67,7 +67,8 @@ CREATE TABLE `durations` (
 --
 
 INSERT INTO `durations` (`id`, `time_duration`, `time_unit`, `status`, `created_at`, `updated_at`) VALUES
-(1, '30', 'Minutes', 'Active', '2026-02-01 11:35:20', '2026-02-02 11:29:32');
+(1, '30', 'Minutes', 'Active', '2026-02-01 11:35:20', '2026-02-02 11:29:32'),
+(3, '45', 'Minutes', 'Active', '2026-02-07 06:37:28', '2026-02-07 06:37:28');
 
 -- --------------------------------------------------------
 
@@ -88,7 +89,8 @@ CREATE TABLE `experiences` (
 --
 
 INSERT INTO `experiences` (`id`, `year_of_exp`, `status`, `created_at`, `updated_at`) VALUES
-(1, '1', 'Inactive', '2026-02-03 05:24:25', '2026-02-03 05:28:06');
+(1, '1', 'Active', '2026-02-03 05:24:25', '2026-02-07 06:10:48'),
+(3, '2', 'Active', '2026-02-07 06:10:55', '2026-02-07 06:10:55');
 
 -- --------------------------------------------------------
 
@@ -135,7 +137,10 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (10, '2026_02_03_115215_create_specialities_table', 6),
 (11, '2026_02_03_134953_create_working_days_table', 7),
 (12, '2026_02_03_152453_add_columns_to_working_days_table', 8),
-(13, '2026_02_03_164508_create_working_time_ranges_table', 9);
+(13, '2026_02_03_164508_create_working_time_ranges_table', 9),
+(15, '2026_02_07_104805_create_staff_services_table', 10),
+(16, '2026_02_05_133902_create_staff_table', 11),
+(17, '2026_02_07_130631_create_staff_working_days_table', 12);
 
 -- --------------------------------------------------------
 
@@ -241,6 +246,87 @@ INSERT INTO `specialities` (`id`, `name`, `slug`, `status`, `created_at`, `updat
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `staffs`
+--
+
+CREATE TABLE `staffs` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `user_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `branch_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `specialty_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `experience_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `working_time_range_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `slot_duration_minutes` int(11) DEFAULT 15,
+  `balance` decimal(12,2) DEFAULT 0.00,
+  `current_status` varchar(191) DEFAULT 'Available',
+  `created_by` bigint(20) UNSIGNED DEFAULT NULL,
+  `updated_by` bigint(20) UNSIGNED DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `staffs`
+--
+
+INSERT INTO `staffs` (`id`, `user_id`, `branch_id`, `specialty_id`, `experience_id`, `working_time_range_id`, `slot_duration_minutes`, `balance`, `current_status`, `created_by`, `updated_by`, `created_at`, `updated_at`) VALUES
+(9, 3, 2, 2, 3, 2, 15, 0.00, 'Available', 1, 1, '2026-02-07 07:17:15', '2026-02-07 09:02:53');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `staff_services`
+--
+
+CREATE TABLE `staff_services` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `user_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `staff_id` bigint(20) UNSIGNED NOT NULL,
+  `service_id` bigint(20) UNSIGNED NOT NULL,
+  `duration_id` bigint(20) UNSIGNED NOT NULL,
+  `price` decimal(10,2) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `staff_services`
+--
+
+INSERT INTO `staff_services` (`id`, `user_id`, `staff_id`, `service_id`, `duration_id`, `price`, `created_at`, `updated_at`) VALUES
+(9, 3, 9, 2, 1, 100.00, '2026-02-07 09:02:53', '2026-02-07 09:02:53'),
+(10, 3, 9, 3, 3, 200.00, '2026-02-07 09:02:53', '2026-02-07 09:02:53');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `staff_working_days`
+--
+
+CREATE TABLE `staff_working_days` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `user_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `staff_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `working_day_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `staff_working_days`
+--
+
+INSERT INTO `staff_working_days` (`id`, `user_id`, `staff_id`, `working_day_id`, `created_at`, `updated_at`) VALUES
+(14, NULL, 9, 4, NULL, NULL),
+(15, NULL, 9, 5, NULL, NULL),
+(16, NULL, 9, 6, NULL, NULL),
+(17, NULL, 9, 7, NULL, NULL),
+(18, NULL, 9, 8, NULL, NULL),
+(19, NULL, 9, 9, NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `users`
 --
 
@@ -313,7 +399,12 @@ CREATE TABLE `working_days` (
 
 INSERT INTO `working_days` (`id`, `name`, `sort_order`, `status`, `created_at`, `updated_at`) VALUES
 (4, 'Saturday', 1, 'Active', '2026-02-03 09:48:54', '2026-02-03 09:57:51'),
-(5, 'Sunday', 2, 'Active', '2026-02-03 09:56:06', '2026-02-03 09:56:06');
+(5, 'Sunday', 2, 'Active', '2026-02-03 09:56:06', '2026-02-03 09:56:06'),
+(6, 'Monday', 3, 'Active', '2026-02-07 07:04:00', '2026-02-07 07:04:00'),
+(7, 'Tuesday', 4, 'Active', '2026-02-07 07:04:14', '2026-02-07 07:04:14'),
+(8, 'Wednesday', 5, 'Active', '2026-02-07 07:04:29', '2026-02-07 07:04:29'),
+(9, 'Thursday', 6, 'Active', '2026-02-07 07:04:43', '2026-02-07 07:04:43'),
+(10, 'Friday', 7, 'Active', '2026-02-07 07:04:56', '2026-02-07 07:04:56');
 
 -- --------------------------------------------------------
 
@@ -336,7 +427,8 @@ CREATE TABLE `working_time_ranges` (
 --
 
 INSERT INTO `working_time_ranges` (`id`, `title`, `from_time`, `to_time`, `status`, `created_at`, `updated_at`) VALUES
-(2, 'Full', '09:00:00', '20:00:00', 'Active', '2026-02-03 12:15:47', '2026-02-03 12:15:47');
+(2, 'Full', '09:00:00', '20:00:00', 'Active', '2026-02-03 12:15:47', '2026-02-03 12:15:47'),
+(3, 'Morning', '09:00:00', '18:00:00', 'Active', '2026-02-07 06:39:34', '2026-02-07 06:39:34');
 
 --
 -- Indexes for dumped tables
@@ -414,6 +506,38 @@ ALTER TABLE `specialities`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `staffs`
+--
+ALTER TABLE `staffs`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `staffs_user_id_foreign` (`user_id`),
+  ADD KEY `staffs_branch_id_foreign` (`branch_id`),
+  ADD KEY `staffs_specialty_id_foreign` (`specialty_id`),
+  ADD KEY `staffs_experience_id_foreign` (`experience_id`),
+  ADD KEY `staffs_working_time_range_id_foreign` (`working_time_range_id`),
+  ADD KEY `staffs_created_by_foreign` (`created_by`),
+  ADD KEY `staffs_updated_by_foreign` (`updated_by`);
+
+--
+-- Indexes for table `staff_services`
+--
+ALTER TABLE `staff_services`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `staff_services_user_id_foreign` (`user_id`),
+  ADD KEY `staff_services_staff_id_foreign` (`staff_id`),
+  ADD KEY `staff_services_service_id_foreign` (`service_id`),
+  ADD KEY `staff_services_duration_id_foreign` (`duration_id`);
+
+--
+-- Indexes for table `staff_working_days`
+--
+ALTER TABLE `staff_working_days`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `staff_working_days_user_id_foreign` (`user_id`),
+  ADD KEY `staff_working_days_staff_id_foreign` (`staff_id`),
+  ADD KEY `staff_working_days_working_day_id_foreign` (`working_day_id`);
+
+--
 -- Indexes for table `users`
 --
 ALTER TABLE `users`
@@ -453,13 +577,13 @@ ALTER TABLE `branches`
 -- AUTO_INCREMENT for table `durations`
 --
 ALTER TABLE `durations`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `experiences`
 --
 ALTER TABLE `experiences`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `failed_jobs`
@@ -471,7 +595,7 @@ ALTER TABLE `failed_jobs`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `personal_access_tokens`
@@ -492,6 +616,24 @@ ALTER TABLE `specialities`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
+-- AUTO_INCREMENT for table `staffs`
+--
+ALTER TABLE `staffs`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
+-- AUTO_INCREMENT for table `staff_services`
+--
+ALTER TABLE `staff_services`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
+-- AUTO_INCREMENT for table `staff_working_days`
+--
+ALTER TABLE `staff_working_days`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+
+--
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
@@ -507,13 +649,46 @@ ALTER TABLE `user_types`
 -- AUTO_INCREMENT for table `working_days`
 --
 ALTER TABLE `working_days`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `working_time_ranges`
 --
 ALTER TABLE `working_time_ranges`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `staffs`
+--
+ALTER TABLE `staffs`
+  ADD CONSTRAINT `staffs_branch_id_foreign` FOREIGN KEY (`branch_id`) REFERENCES `branches` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `staffs_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `staffs_experience_id_foreign` FOREIGN KEY (`experience_id`) REFERENCES `experiences` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `staffs_specialty_id_foreign` FOREIGN KEY (`specialty_id`) REFERENCES `specialities` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `staffs_updated_by_foreign` FOREIGN KEY (`updated_by`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `staffs_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `staffs_working_time_range_id_foreign` FOREIGN KEY (`working_time_range_id`) REFERENCES `working_time_ranges` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `staff_services`
+--
+ALTER TABLE `staff_services`
+  ADD CONSTRAINT `staff_services_duration_id_foreign` FOREIGN KEY (`duration_id`) REFERENCES `durations` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `staff_services_service_id_foreign` FOREIGN KEY (`service_id`) REFERENCES `services` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `staff_services_staff_id_foreign` FOREIGN KEY (`staff_id`) REFERENCES `staffs` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `staff_services_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `staff_working_days`
+--
+ALTER TABLE `staff_working_days`
+  ADD CONSTRAINT `staff_working_days_staff_id_foreign` FOREIGN KEY (`staff_id`) REFERENCES `staffs` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `staff_working_days_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `staff_working_days_working_day_id_foreign` FOREIGN KEY (`working_day_id`) REFERENCES `working_days` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -34,7 +34,7 @@ class Staff extends Model
             'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg',
             'password' => 'required|string|min:6',
             'confirm_password' => 'required|string|min:6|same:password',
-            'status' => 'required|in:Active,Inactive',
+            'status' => 'nullable|in:Active,Inactive',
         ];
 
         return $rules;
