@@ -18,4 +18,16 @@ class StaffService extends Model
         'duration_id',
         'price',
     ];
+    public function staff()
+    {
+        return $this->belongsTo(Staff::class);
+    }
+    public function service()
+    {
+        return $this->belongsTo(Service::class);
+    }
+    public function duration()
+    {
+        return $this->belongsTo(Duration::class);
+    }
 }

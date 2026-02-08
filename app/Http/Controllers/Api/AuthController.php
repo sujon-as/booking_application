@@ -69,9 +69,7 @@ class AuthController extends AppBaseController
             // Rate limiting to prevent brute-force attacks
             $key = 'login_attempts:' . $request->ip();
             if (RateLimiter::tooManyAttempts($key, 5)) {
-                return $this->sendError([
-                    'message' => 'Too many login attempts. Please try again later.',
-                ], 429);
+                return $this->sendError('Too many login attempts. Please try again later.', 429);
             }
 
             DB::beginTransaction();
@@ -111,9 +109,7 @@ class AuthController extends AppBaseController
                 'line' => $e->getLine()
             ]);
 
-            return $this->sendError([
-                'message' => 'Something went wrong!!!',
-            ], 500);
+            return $this->sendError('Something went wrong!!!', 500);
         }
     }
     public function logout(Request $request)
@@ -143,9 +139,7 @@ class AuthController extends AppBaseController
                 'line' => $e->getLine()
             ]);
 
-            return $this->sendError([
-                'message' => 'Something went wrong!!!',
-            ], 500);
+            return $this->sendError('Something went wrong!!!', 500);
         }
     }
 }

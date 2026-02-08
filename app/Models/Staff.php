@@ -89,6 +89,27 @@ class Staff extends Model
 
         return $rules;
     }
+    public static function apiStoreServiceRules()
+    {
+        $rules = [
+            'branch_id' => 'required|exists:branches,id',
+            'specialty_id' => 'required|exists:specialities,id',
+            'experience_id' => 'required|exists:experiences,id',
+            'working_time_range_id' => 'required|exists:working_time_ranges,id',
+
+            'working_day_ids' => 'required|array|min:1',
+            'working_day_ids.*' => 'exists:working_days,id',
+
+            'services' => 'required|array|min:1',
+            'services.*.service_id' => 'required|exists:services,id',
+
+            'services.*duration_id' => 'required|exists:durations,id',
+
+            'services.*.price' => 'required|numeric|min:1',
+        ];
+
+        return $rules;
+    }
 
     public function workingDays()
     {
@@ -96,6 +117,22 @@ class Staff extends Model
             WorkingDay::class,
             'staff_working_days'
         );
+    }
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class);
+    }
+    public function specialty()
+    {
+        return $this->belongsTo(Speciality::class);
+    }
+    public function experience()
+    {
+        return $this->belongsTo(Experience::class);
+    }
+    public function workingTimeRange()
+    {
+        return $this->belongsTo(WorkingTimeRange::class);
     }
     public function services()
     {
