@@ -90,8 +90,9 @@ Route::get('/clear-cache', function () {
     Artisan::call('config:clear');
     Artisan::call('route:clear');
     Artisan::call('view:clear');
+    Artisan::call('optimize');
 
-    return 'All caches (config, route, view, application) have been cleared!';
+    return 'All caches (config, route, view, optimize) have been cleared!';
 });
 
 Route::get('/migrate', function(){
