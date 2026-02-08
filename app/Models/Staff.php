@@ -80,6 +80,15 @@ class Staff extends Model
 
         return $rules;
     }
+    public static function spLoginRules()
+    {
+        $rules = [
+            'login' => 'required|string',
+            'password' => 'required|string|min:6',
+        ];
+
+        return $rules;
+    }
 
     public function workingDays()
     {

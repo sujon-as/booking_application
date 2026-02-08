@@ -9,7 +9,9 @@ use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\RateLimiter;
 
 class AuthController extends AppBaseController
 {
@@ -49,7 +51,7 @@ class AuthController extends AppBaseController
             DB::rollBack();
 
             // Log the error
-            Log::error('Error in updating Register: ', [
+            Log::error('Error in SP Register: ', [
                 'message' => $e->getMessage(),
                 'code' => $e->getCode(),
                 'line' => $e->getLine()
@@ -57,6 +59,91 @@ class AuthController extends AppBaseController
 
             return response()->json([
                 'success' => false,
+                'message' => 'Something went wrong!!!',
+            ], 500);
+        }
+    }
+    public function SPLogin(StaffRequest $request)
+    {
+        try {
+            // Rate limiting to prevent brute-force attacks
+            $key = 'login_attempts:' . $request->ip();
+            if (RateLimiter::tooManyAttempts($key, 5)) {
+                return $this->sendError([
+                    'message' => 'Too many login attempts. Please try again later.',
+                ], 429);
+            }
+
+            DB::beginTransaction();
+
+            // Find user by phone or email
+            $user = User::where('email', $request->login)
+                ->orWhere('phone', $request->login)
+                ->where('status', "Active")
+                ->first();
+
+            // Validate user and password
+            if (!$user || !Hash::check($request->password, $user->password)) {
+                RateLimiter::hit($key, 60); // Increase failed login count (lockout for 1 minute)
+                return $this->sendError('The provided credentials are incorrect.', 401);
+            }
+
+            // Reset login attempts after successful login
+            RateLimiter::clear($key);
+
+            // Generate API token immediately if OTP is not enabled
+            $token = $user->createToken('API Token')->plainTextToken;
+
+            DB::commit();
+
+            return $this->sendResponse([
+                'token' => $token,
+                'user' => $user,
+            ], 'Login successful.');
+
+        } catch (Exception $e) {
+            DB::rollBack();
+
+            // Log the error
+            Log::error('Error in SP Login: ', [
+                'message' => $e->getMessage(),
+                'code' => $e->getCode(),
+                'line' => $e->getLine()
+            ]);
+
+            return $this->sendError([
+                'message' => 'Something went wrong!!!',
+            ], 500);
+        }
+    }
+    public function logout(Request $request)
+    {
+        try {
+            // Ensure the user is authenticated
+            if (!$request->user()) {
+                return $this->sendError('Unauthorized', 401);
+            }
+
+            DB::beginTransaction();
+
+            if ($request->user()) {
+                // Delete all tokens for the authenticated user
+                $request->user()->tokens()->delete();
+            }
+
+            DB::commit();
+
+            return $this->sendSuccess('Logged out successfully.');
+        } catch (Exception $e) {
+            DB::rollBack();
+            // Log the error
+            Log::error('Error in Logout: ', [
+                'message' => $e->getMessage(),
+                'code' => $e->getCode(),
+                'line' => $e->getLine()
+            ]);
+
+            return $this->sendError([
                 'message' => 'Something went wrong!!!',
             ], 500);
         }

@@ -47,6 +47,10 @@ class StaffRequest extends FormRequest
             return Staff::storeServiceRules();
         }
 
+        if ($routeName === 'api.sp.login') {
+            return Staff::spLoginRules();
+        }
+
         return Staff::rules($id);
     }
 }
