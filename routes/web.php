@@ -93,3 +93,17 @@ Route::get('/clear-cache', function () {
 
     return 'All caches (config, route, view, application) have been cleared!';
 });
+
+Route::get('/migrate', function(){
+    Artisan::call('migrate', [
+        '--force' => true,
+    ]);
+    return response()->json(['message' => 'Migrations run successfully.']);
+});
+
+Route::get('/db-seed', function(){
+    Artisan::call('db:seed', [
+        '--force' => true,
+    ]);
+    return response()->json(['message' => 'Database seeded successfully.']);
+});
